@@ -9,7 +9,10 @@
             "email": "jakub.blaha@involve.cz"
         }
     ],
-    "require": {},
+    "require": {
+        "php": "^8.0",
+        "laravel/framework": "^10.0"
+    },
     "autoload": {
         "psr-4": {
             "BoredProgrammers\\LaravelEloquentMappable\\": "src/"
