@@ -1,7 +1,7 @@
 # Laravel Eloquent Mappable
 
 **🚧 This package is in development, and it's not ready for use in production yet. 🚧**
-test
+
 ## License
 
 This project is licensed under the [MIT license](https://github.com/Bored-Programmers/laravel-eloquent-mappable/blob/main/LICENSE.md).
