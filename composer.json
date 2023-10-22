@@ -11,11 +11,20 @@
     ],
     "require": {
         "php": "^8.1",
-        "laravel/framework": "^10.0"
+        "laravel/framework": "^10.0",
+        "barryvdh/reflection-docblock": "^2.1",
+        "composer/class-map-generator": "^1.1"
     },
     "autoload": {
         "psr-4": {
             "BoredProgrammers\\LaravelEloquentMappable\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "BoredProgrammers\\LaravelEloquentMappable\\Providers\\LaravelEloquentMappableServiceProvider"
+            ]
         }
     }
 }
