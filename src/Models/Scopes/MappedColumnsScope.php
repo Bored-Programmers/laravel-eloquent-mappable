@@ -14,36 +14,22 @@ class MappedColumnsScope implements Scope
     public function apply(EloquentBuilder $builder, Model $model): void
     {
         $builder->beforeQuery(function (QueryBuilder $builder) use ($model) {
-            if (!$mappedColToDbCol = $model->columns ?? null) {
+            if (!$attributeToColumn = $model->mapAttributeToColumn ?? null) {
                 return;
             }
 
             $modelTable = $model->getTable();
-            $mappedColToDbColWithTable = collect($mappedColToDbCol)
+            $attributeToColumnWithTable = collect($attributeToColumn)
                 ->mapWithKeys(fn($value, $key) => [$modelTable . '.' . $key => $modelTable . '.' . $value])
-                ->merge($mappedColToDbCol);
+                ->merge($attributeToColumn);
 
-            $dbColToMappedCol = $mappedColToDbColWithTable->flip();
-
-            $builder->columns = $this->mapColumns(
-                $builder->columns,
-                $mappedColToDbColWithTable,
-                $dbColToMappedCol,
-                $model
-            );
-
-            $builder->wheres = $this->mapColumns(
-                $builder->wheres,
-                $mappedColToDbColWithTable,
-                $dbColToMappedCol,
-                $model
-            );
-
-            $builder->joins = $this->mapJoins($builder->joins, $mappedColToDbColWithTable);
+            $builder->columns = $this->mapColumns($builder->columns, $attributeToColumnWithTable);
+            $builder->wheres = $this->mapColumns($builder->wheres, $attributeToColumnWithTable);
+            $builder->joins = $this->mapJoins($builder->joins, $attributeToColumnWithTable);
         });
     }
 
-    private function mapColumns($array, $mappedColToDbColWithTable, $dbColToMappedCol, $model)
+    private function mapColumns($array, $mappedColToDbColWithTable)
     {
         if (!$array) {
             return $array;

@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
 
 /**
- * @property array $columns
+ * @property array $mapAttributeToColumn
  */
 trait HasMappableColumns
 {
@@ -21,13 +21,13 @@ trait HasMappableColumns
     {
         static::addGlobalScope(new MappedColumnsScope());
 
-        foreach ((new static)->columns ?? [] as $mappedCol => $dbCol) {
-            static::macro('get' . Str::studly($mappedCol) . 'Attribute', function () use ($dbCol) {
-                return $this->$dbCol;
+        foreach ((new static)->mapAttributeToColumn ?? [] as $attribute => $column) {
+            static::macro('get' . Str::studly($attribute) . 'Attribute', function () use ($column) {
+                return $this->$column;
             });
 
-            static::macro('set' . Str::studly($mappedCol) . 'Attribute', function ($value) use ($dbCol) {
-                $this->$dbCol = $value;
+            static::macro('set' . Str::studly($attribute) . 'Attribute', function ($value) use ($column) {
+                $this->$column = $value;
             });
         }
     }
@@ -37,16 +37,16 @@ trait HasMappableColumns
         /** @var Model $instance */
         $instance = parent::newInstance($attributes, $exists);
 
-        foreach ($instance->columns ?? [] as $mappedCol => $dbCol) {
-            $instance->hidden[] = $dbCol;
-            $instance->appends[] = $mappedCol;
+        foreach ($instance->mapAttributeToColumn ?? [] as $attribute => $column) {
+            $instance->hidden[] = $column;
+            $instance->appends[] = $attribute;
 
-            if (in_array($mappedCol, $instance->guarded)) {
-                $instance->guarded[] = $dbCol;
+            if (in_array($attribute, $instance->guarded)) {
+                $instance->guarded[] = $column;
             }
 
-            if (in_array($mappedCol, $instance->fillable)) {
-                $instance->fillable[] = $dbCol;
+            if (in_array($attribute, $instance->fillable)) {
+                $instance->fillable[] = $column;
             }
         }
 
