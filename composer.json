@@ -22,7 +22,10 @@
     "autoload": {
         "psr-4": {
             "BoredProgrammers\\LaravelEloquentMappable\\": "src/"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "extra": {
         "laravel": {

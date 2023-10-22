@@ -2,6 +2,7 @@
 
 namespace BoredProgrammers\LaravelEloquentMappable\Models\Scopes;
 
+use BoredProgrammers\LaravelEloquentMappable\MappableGrammar;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
@@ -13,15 +14,18 @@ class MappedColumnsScope implements Scope
 
     public function apply(EloquentBuilder $builder, Model $model): void
     {
-        $builder->beforeQuery(function (QueryBuilder $builder) use ($model) {
-            if (!$attributeToColumn = $model->mapAttributeToColumn ?? null) {
-                return;
-            }
+        if (!$attributeToColumn = $model->mapAttributeToColumn ?? null) {
+            return;
+        }
 
-            $modelTable = $model->getTable();
-            $attributeToColumnWithTable = collect($attributeToColumn)
-                ->mapWithKeys(fn($value, $key) => [$modelTable . '.' . $key => $modelTable . '.' . $value])
-                ->merge($attributeToColumn);
+        $modelTable = $model->getTable();
+        $attributeToColumnWithTable = collect($attributeToColumn)
+            ->mapWithKeys(fn($value, $key) => [$modelTable . '.' . $key => $modelTable . '.' . $value])
+            ->merge($attributeToColumn)
+            ->toArray();
+
+        $builder->beforeQuery(function (QueryBuilder $builder) use ($attributeToColumnWithTable) {
+            $builder->grammar = new MappableGrammar($attributeToColumnWithTable, $builder->grammar);
 
             $builder->columns = $this->mapColumns($builder->columns, $attributeToColumnWithTable);
             $builder->wheres = $this->mapColumns($builder->wheres, $attributeToColumnWithTable);
