@@ -15,6 +15,10 @@
         "barryvdh/reflection-docblock": "^2.1",
         "composer/class-map-generator": "^1.1"
     },
+    "require-dev": {
+        "orchestra/testbench": "^8.13",
+        "nunomaduro/collision": "^7.8"
+    },
     "autoload": {
         "psr-4": {
             "BoredProgrammers\\LaravelEloquentMappable\\": "src/"
@@ -26,5 +30,26 @@
                 "BoredProgrammers\\LaravelEloquentMappable\\Providers\\LaravelEloquentMappableServiceProvider"
             ]
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BoredProgrammers\\LaravelEloquentMappable\\Tests\\": "tests",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "@build",
+            "@php vendor/bin/testbench serve"
+        ]
     }
 }

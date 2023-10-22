@@ -35,7 +35,7 @@ trait HasMappableColumns
     public function newInstance($attributes = [], $exists = false): Model
     {
         /** @var Model $instance */
-        $instance = parent::newInstance($attributes, $exists);
+        $instance = parent::newInstance(exists: $exists);
 
         foreach ($instance->mapAttributeToColumn ?? [] as $attribute => $column) {
             $instance->hidden[] = $column;
@@ -49,6 +49,8 @@ trait HasMappableColumns
                 $instance->fillable[] = $column;
             }
         }
+
+        $instance->fill((array)$attributes);
 
         return $instance;
     }
