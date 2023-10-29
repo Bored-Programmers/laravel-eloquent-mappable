@@ -41,8 +41,17 @@ class MappedColumnsScope implements Scope
 
         foreach ($array as $key => $column) {
             if (is_array($column)) {
-                if ($column['type'] === 'Exists') {
+                if ($column['type'] === 'Exists' || $column['type'] === 'Nested') {
                     $column['query']->applyBeforeQueryCallbacks();
+
+                    $mappedColToDbColOnlyTables = array_filter(
+                        $mappedColToDbColWithTable,
+                        fn($val) => str_contains($val, '.')
+                    );
+
+                    $column['query']->columns = $this->mapColumns($column['query']->columns, $mappedColToDbColOnlyTables);
+                    $column['query']->wheres = $this->mapColumns($column['query']->wheres, $mappedColToDbColOnlyTables);
+                    $column['query']->joins = $this->mapJoins($column['query']->joins, $mappedColToDbColOnlyTables);
 
                 } elseif ($column['type'] === 'Column') {
                     if ($newColumnName = $mappedColToDbColWithTable[$column['first']] ?? null) {
