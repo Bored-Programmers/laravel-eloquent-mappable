@@ -34,13 +34,13 @@ class GenerateMappableColumnsCommand extends Command
                 continue;
             }
 
-            if (!$reflection->hasProperty('columns')) {
+            if (!$reflection->hasProperty('mapAttributeToColumn')) {
                 continue;
             }
 
             echo 'Generating for ' . $model . "\n";
 
-            $mappedColumns = $reflection->newInstance()->columns;
+            $mappedColumns = $reflection->newInstance()->mapAttributeToColumn;
             $docBlock = new DocBlock($reflection);
 
             $existingProperties = [];
