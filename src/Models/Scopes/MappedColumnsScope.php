@@ -40,18 +40,36 @@ class MappedColumnsScope implements Scope
         }
 
         foreach ($array as $key => $column) {
-            $columnName = is_array($column) ? $column['column'] : $column;
+            if (is_array($column)) {
+                if ($column['type'] === 'Exists') {
+                    $column['query']->applyBeforeQueryCallbacks();
 
-            if ($columnName === '*' || str_contains($columnName, ' as ')) { // todo: add support for column aliases
+                } elseif ($column['type'] === 'Column') {
+                    if ($newColumnName = $mappedColToDbColWithTable[$column['first']] ?? null) {
+                        $array[$key]['first'] = $newColumnName;
+                    }
+
+                    if ($newColumnName = $mappedColToDbColWithTable[$column['second']] ?? null) {
+                        $array[$key]['second'] = $newColumnName;
+                    }
+
+                } elseif (isset($column['column'])) {
+                    if ($newColumnName = $mappedColToDbColWithTable[$column['column']] ?? null) {
+                        $array[$key]['column'] = $newColumnName;
+                    }
+                }
+
+                // fixme: some unhandled cases?
+
                 continue;
             }
 
-            if ($newColumnName = $mappedColToDbColWithTable[$columnName] ?? null) {
-                if (is_array($column)) {
-                    $array[$key]['column'] = $newColumnName;
-                } else {
-                    $array[$key] = $newColumnName;
-                }
+            if ($column === '*' || str_contains($column, ' as ')) { // todo: add support for column aliases
+                continue;
+            }
+
+            if ($newColumnName = $mappedColToDbColWithTable[$column] ?? null) {
+                $array[$key] = $newColumnName;
             }
         }
 
